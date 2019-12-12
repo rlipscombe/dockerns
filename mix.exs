@@ -7,6 +7,8 @@ defmodule Dockerns.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
+      default_task: "escript.build",
+      escript: [main_module: Dockerns.Main],
       deps: deps()
     ]
   end
@@ -21,8 +23,9 @@ defmodule Dockerns.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:dns, "~> 2.1"},   # BSD 3-clause
+      {:gun, "~> 1.3"},   # ISC
+      {:jason, "~> 1.1"}  # Apache 2.0
     ]
   end
 end
