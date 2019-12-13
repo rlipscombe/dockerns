@@ -73,5 +73,7 @@ Restart the `NetworkManager` service (again):
 ## Testing
 
 ```
-dig @localhost -p 11053 docker_container.docker_network
+dig @localhost -p 11053 docker_container_1.docker_network
+dig @localhost -p 11053 container.docker_network
+dig @localhost -p 11053 d80147f7d1a9.docker_network
 ```
