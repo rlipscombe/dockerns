@@ -1,7 +1,7 @@
 defmodule Dockerns.Database do
   use GenServer
 
-  @interval 30_000
+  @interval_ms 30_000
 
   def start_link(sock) do
     GenServer.start_link(__MODULE__, sock, name: __MODULE__)
@@ -9,7 +9,7 @@ defmodule Dockerns.Database do
 
   def init(sock) do
     database = Dockerns.Refresh.refresh(sock)
-    Process.send_after(self(), :refresh, @interval)
+    Process.send_after(self(), :refresh, @interval_ms)
     {:ok, %{sock: sock, database: database}}
   end
 
@@ -24,7 +24,7 @@ defmodule Dockerns.Database do
 
   def handle_info(:refresh, state = %{sock: sock}) do
     database = Dockerns.Refresh.refresh(sock)
-    Process.send_after(self(), :refresh, @interval)
+    Process.send_after(self(), :refresh, @interval_ms)
     {:noreply, %{state | database: database}}
   end
 end
