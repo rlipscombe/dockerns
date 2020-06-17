@@ -56,9 +56,9 @@ Restart the `network-manager` service:
 
     sudo service network-manager restart
 
-## Ubuntu 18.04 (systemd-resolved, NetworkManager)
+### Ubuntu 18.04 (systemd-resolved, NetworkManager)
 
-1. `sudo apt-get install dnsmasq`. Ignore the error messages.
+1. `sudo apt-get install dnsmasq`. Ignore the error messages, if there are any.
 2. Edit `/etc/NetworkManager/NetworkManager.conf` (use `sudo`).
 3. In the `[main]` section, add `dns=dnsmasq`.
 4. `sudo systemctl restart NetworkManager`.
@@ -77,3 +77,13 @@ Add the following line to `/etc/NetworkManager/dnsmasq.d/docker_network`:
 Restart the `NetworkManager` service (again):
 
     sudo systemctl restart NetworkManager
+
+You might also need to edit `/etc/nsswitch.conf` (because systemd).
+
+Change the `hosts:` line from this:
+
+    hosts:          files mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] dns myhostname
+
+...to this:
+
+    hosts:          files mdns4_minimal [NOTFOUND=return] dns myhostname
