@@ -28,11 +28,12 @@ defmodule Dockerns.Refresh do
   defp add_aliases(sock, c, acc) do
     json = get_inspect_json(sock, c)
     inspect = Jason.decode!(json)
-    networks = get_in(inspect, ["NetworkSettings", "Networks"])
+    networks = get_in(inspect, ["NetworkSettings", "Networks"]) |> or_default([])
 
-    records = for {network, settings} <- networks do
-      aliases = get_in(settings, ["Aliases"])
-      address = get_in(settings, ["IPAddress"])
+    records =
+      for {network, settings} <- networks do
+        aliases = get_in(settings, ["Aliases"]) |> or_default([])
+        address = get_in(settings, ["IPAddress"]) |> or_default([])
 
       Enum.reduce(aliases, [], fn a, recs ->
         [{a, network, address} | recs]
@@ -68,4 +69,7 @@ defmodule Dockerns.Refresh do
     :gun.flush(conn)
     json
   end
+
+  defp or_default(nil, default), do: default
+  defp or_default(value, _default), do: value
 end
