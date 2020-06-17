@@ -29,4 +29,14 @@ defmodule Dockerns.Server do
         %{record | header: %{record.header | qr: true}, anlist: [rr]}
     end
   end
+
+  def handle(
+        record = %DNS.Record{qdlist: [%DNS.Query{type: :aaaa, domain: domain} | _]},
+        _
+      ) do
+        # We don't do AAAA (IPv6) records; return an empty answer section,
+        # per https://tools.ietf.org/html/rfc4074#section-3
+        Logger.info("AAAA #{domain}: no results")
+        %{record | header: %{record.header | qr: true}, anlist: []}
+  end
 end
