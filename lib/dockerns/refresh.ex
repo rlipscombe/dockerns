@@ -3,11 +3,33 @@ defmodule Dockerns.Refresh do
     json = get_containers_json(sock)
     containers = Jason.decode!(json)
 
-    Enum.reduce(containers, %{}, fn c, acc ->
-      acc = add_names(c, acc)
-      acc = add_aliases(sock, c, acc)
-      acc
-    end)
+    acc = %{}
+
+    acc =
+      Enum.reduce(containers, acc, fn c, acc ->
+        acc = add_names(c, acc)
+        acc = add_aliases(sock, c, acc)
+        acc
+      end)
+
+    json = get_networks_json(sock)
+    networks = Jason.decode!(json)
+
+    acc =
+      Enum.reduce(networks, acc, fn n, acc ->
+        name = get_in(n, ["Name"])
+
+        case get_in(n, ["IPAM", "Config"]) do
+          [config] ->
+            gateway = get_in(config, ["Gateway"])
+            Map.put(acc, "gateway" <> "." <> name, gateway)
+
+          _ ->
+            acc
+        end
+      end)
+
+    acc
   end
 
   defp add_names(c, acc) do
@@ -35,10 +57,10 @@ defmodule Dockerns.Refresh do
         aliases = get_in(settings, ["Aliases"]) |> or_default([])
         address = get_in(settings, ["IPAddress"]) |> or_default([])
 
-      Enum.reduce(aliases, [], fn a, recs ->
-        [{a, network, address} | recs]
-      end)
-    end
+        Enum.reduce(aliases, [], fn a, recs ->
+          [{a, network, address} | recs]
+        end)
+      end
 
     records = List.flatten(records)
 
@@ -56,6 +78,11 @@ defmodule Dockerns.Refresh do
     # curl --unix-socket /var/run/docker.sock -X GET http:/1.40/containers/:id/json
     id = Map.get(c, "Id")
     get_json(sock, "/containers/#{id}/json")
+  end
+
+  defp get_networks_json(sock) do
+    # curl --unix-socket /var/run/docker.sock -X GET http:/1.40/networks
+    get_json(sock, "/networks")
   end
 
   defp get_json(sock, path) do
