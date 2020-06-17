@@ -10,11 +10,11 @@ defmodule Dockerns.Server do
       ) do
     case Dockerns.Database.get_a(to_string(domain)) do
       nil ->
-        Logger.info("A #{domain}: NXDOMAIN")
+        Logger.warn("A #{domain}: NXDOMAIN")
         %{record | header: %{record.header | qr: true, rcode: 3}}
 
       addr ->
-        Logger.info("A #{domain}: #{addr}")
+        Logger.debug("A #{domain}: #{addr}")
 
         {:ok, ip} = :inet.parse_address(to_charlist(addr))
 
@@ -36,7 +36,7 @@ defmodule Dockerns.Server do
       ) do
         # We don't do AAAA (IPv6) records; return an empty answer section,
         # per https://tools.ietf.org/html/rfc4074#section-3
-        Logger.info("AAAA #{domain}: no results")
+        Logger.debug("AAAA #{domain}: no results")
         %{record | header: %{record.header | qr: true}, anlist: []}
   end
 end
