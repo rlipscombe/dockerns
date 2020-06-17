@@ -47,10 +47,12 @@ defmodule Dockerns.Refresh do
   end
 
   defp get_containers_json(sock) do
+    # curl --unix-socket /var/run/docker.sock -X GET http:/1.40/containers/json
     get_json(sock, "/containers/json")
   end
 
   defp get_inspect_json(sock, c) do
+    # curl --unix-socket /var/run/docker.sock -X GET http:/1.40/containers/:id/json
     id = Map.get(c, "Id")
     get_json(sock, "/containers/#{id}/json")
   end
