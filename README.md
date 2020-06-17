@@ -33,6 +33,14 @@ You can run it on the host:
 
 Left as an exercise for the reader.
 
+## Testing
+
+```
+dig @localhost -p 11053 docker_container_1.docker_network
+dig @localhost -p 11053 container.docker_network
+dig @localhost -p 11053 d80147f7d1a9.docker_network
+```
+
 ## Installation
 
 You need to set up your local DNS resolver to forward queries for the relevant
@@ -69,11 +77,3 @@ Add the following line to `/etc/NetworkManager/dnsmasq.d/docker_network`:
 Restart the `NetworkManager` service (again):
 
     sudo systemctl restart NetworkManager
-
-## Testing
-
-```
-dig @localhost -p 11053 docker_container_1.docker_network
-dig @localhost -p 11053 container.docker_network
-dig @localhost -p 11053 d80147f7d1a9.docker_network
-```
