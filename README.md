@@ -12,6 +12,10 @@ From the host, you want to look up a docker container's IP address.
 
 Because it results in DNS loops for containers that don't exist.
 
+## But I prefer Python!
+
+Fair enough. See https://github.com/phensley/docker-dns instead.
+
 ## Compilation
 
 It's written in Elixir, and makes use of the [dns](https://hex.pm/packages/dns) package.
